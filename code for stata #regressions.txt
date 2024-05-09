@@ -1,0 +1,27 @@
+# Regressions
+**общая
+reg ln_wage i.health i.status i.marst i.educ age2 i.sex unemployment_rate work_hours children height i.industry
+est store ols_reg
+
+ivregress 2sls ln_wage (health educ children = smoking life_exp education_level social_benefits) age2 i.sex i.marst unemployment_rate i.status work_hours height i.industry, first
+est store two_sls_reg
+
+hausman two_sls_reg ols_reg, constant
+
+** для мужчин
+reg ln_wage i.health i.status i.marst i.educ age2  unemployment_rate work_hours children height i.industry if sex == 1
+est store ols_reg_male
+ivregress 2sls ln_wage (health educ children = smoking life_exp education_level social_benefits) age2 i.marst unemployment_rate i.status work_hours height i.industry if sex == 1
+est store two_sls_reg_male
+hausman two_sls_reg_male ols_reg_male, constant
+
+** для женщин
+reg ln_wage i.health i.status i.marst i.educ age2  unemployment_rate work_hours children height i.industry if sex == 2
+est store ols_reg_fem
+ivregress 2sls ln_wage (health educ children = smoking life_exp education_level social_benefits) age2 i.marst unemployment_rate i.status work_hours height i.industry if sex == 2
+est store two_sls_reg_fem
+hausman two_sls_reg_fem ols_reg_fem, constant
+
+# таблица для ols
+est tab ols_reg ols_reg_fem ols_reg_male , star (0.1 0.05 0.01) b(%7.3f)
+
